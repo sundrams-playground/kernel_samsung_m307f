@@ -33,6 +33,9 @@ int __cgroup_bpf_update(struct cgroup *cgrp, struct cgroup *parent,
 			struct bpf_prog *prog, enum bpf_attach_type type,
 			bool overridable);
 
+int __cgroup_bpf_query(struct cgroup *cgrp, const union bpf_attr *attr,
+		       union bpf_attr __user *uattr);
+
 /* Wrapper for __cgroup_bpf_update() protected by cgroup_mutex */
 int cgroup_bpf_update(struct cgroup *cgrp, struct bpf_prog *prog,
 		      enum bpf_attach_type type, bool overridable);
@@ -48,6 +51,10 @@ int __cgroup_bpf_run_filter_sock_ops(struct sock *sk,
 				     struct bpf_sock_ops_kern *sock_ops,
 				     enum bpf_attach_type type);
 
+int cgroup_bpf_query(struct cgroup *cgrp, const union bpf_attr *attr,
+		     union bpf_attr __user *uattr);
+
+			
 /* Wrappers for __cgroup_bpf_run_filter_skb() guarded by cgroup_bpf_enabled. */
 #define BPF_CGROUP_RUN_PROG_INET_INGRESS(sk, skb)			      \
 ({									      \
