@@ -54,13 +54,6 @@ jobs:
           mkdir -p ./release
           mv -f `find ./ -iname *.zip` ./release/
 
-    - name: Upload release package
-      uses: actions/upload-artifact@v2
-      with:
-        name: One UI Four Kernel ZIPs
-        path: 'release'
-        if-no-files-found: error
-
     - name: Prepare build config artifact
       run: |
           cp .config ./release/kernel_config_a50_oneui-s-k-e.txt
@@ -73,6 +66,7 @@ jobs:
       with:
         to: ${{ secrets.TELEGRAM_TO }}
         token: ${{ secrets.TELEGRAM_TOKEN }}
+        message: " "
         document: ./release/*.zip
         if-no-files-found: error
 
@@ -130,6 +124,7 @@ jobs:
       with:
         to: ${{ secrets.TELEGRAM_TO }}
         token: ${{ secrets.TELEGRAM_TOKEN }}
+        message: " "
         document: ./release/*.zip
 
   aosp-s-k-e:
@@ -187,6 +182,7 @@ jobs:
       with:
         to: ${{ secrets.TELEGRAM_TO }}
         token: ${{ secrets.TELEGRAM_TOKEN }}
+        message: " "
         document: ./release/*.zip
         
   aosp-s-k-p:
@@ -248,6 +244,7 @@ jobs:
       with:
         to: ${{ secrets.TELEGRAM_TO }}
         token: ${{ secrets.TELEGRAM_TOKEN }}
+        message: " "
         document: ./release/*.zip
 
   del_runs:
@@ -260,5 +257,5 @@ jobs:
         with:
           token: ${{ github.token }}
           repository: ${{ github.repository }}
-          retain_days: 1
+          retain_days: 0
           keep_minimum_runs: 2
