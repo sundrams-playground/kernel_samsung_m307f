@@ -20,9 +20,9 @@ jobs:
 
     - uses: szenius/set-timezone@v1.0
       with:
-        timezoneLinux: "Asia/Manila"
-        timezoneMacos: "Asia/Manila"
-        timezoneWindows: "Philippine Standard Time"
+        timezoneLinux: "Asia/Kolkata"
+        timezoneMacos: "Asia/Kolkata"
+        timezoneWindows: "Indian Standard Time"
 
     - name: Export build branch
       run: echo "##[set-output name=branch;]$(echo ${GITHUB_REF#refs/heads/})"
@@ -34,6 +34,15 @@ jobs:
     - name: Install Debian/Ubuntu dependencies
       run: sudo apt-get install bzip2 lib32stdc++6 libc6-dev-i386 libncurses5 jq -y
 
+    - name: Setup KernelSU
+      run: |
+          set -eo pipefail
+          echo "  I: Building Mint kernel ${GITHUB_REF##*/}-${GITHUB_RUN_NUMBER}"
+          curl -LSs "https://raw.githubusercontent.com/tiann/KernelSU/main/kernel/setup.sh" | bash -s main
+          cd KernelSU
+          echo "KSU_VERSION=$(($(git rev-list --count HEAD) + 10200))" >> $GITHUB_ENV
+          cd -
+
     - name: Build Mint kernel
       run: |
           set -eo pipefail
@@ -43,7 +52,7 @@ jobs:
     - name: Prepare release package
       run: |
           mkdir -p ./release
-          mv -f `find ./ -iname Mint*-*.zip` ./release/
+          mv -f `find ./ -iname *.zip` ./release/
 
     - name: Upload release package
       uses: actions/upload-artifact@v2
@@ -82,9 +91,9 @@ jobs:
 
     - uses: szenius/set-timezone@v1.0
       with:
-        timezoneLinux: "Asia/Manila"
-        timezoneMacos: "Asia/Manila"
-        timezoneWindows: "Philippine Standard Time"
+        timezoneLinux: "Asia/Kolkata"
+        timezoneMacos: "Asia/Kolkata"
+        timezoneWindows: "Indian Standard Time"
 
     - name: Export build branch
       run: echo "##[set-output name=branch;]$(echo ${GITHUB_REF#refs/heads/})"
@@ -96,6 +105,15 @@ jobs:
     - name: Install Debian/Ubuntu dependencies
       run: sudo apt-get install bzip2 lib32stdc++6 libc6-dev-i386 libncurses5 jq -y
 
+    - name: Setup KernelSU
+      run: |
+          set -eo pipefail
+          echo "  I: Building Mint kernel ${GITHUB_REF##*/}-${GITHUB_RUN_NUMBER}"
+          curl -LSs "https://raw.githubusercontent.com/tiann/KernelSU/main/kernel/setup.sh" | bash -s main
+          cd KernelSU
+          echo "KSU_VERSION=$(($(git rev-list --count HEAD) + 10200))" >> $GITHUB_ENV
+          cd -
+
     - name: Build Mint kernel
       run: |
           set -eo pipefail
@@ -105,7 +123,7 @@ jobs:
     - name: Prepare release package
       run: |
           mkdir -p ./release
-          mv -f `find ./ -iname Mint*-*.zip` ./release/
+          mv -f `find ./ -iname *.zip` ./release/
 
     - name: Upload build to Telegram
       uses: appleboy/telegram-action@master
@@ -133,9 +151,9 @@ jobs:
 
     - uses: szenius/set-timezone@v1.0
       with:
-        timezoneLinux: "Asia/Manila"
-        timezoneMacos: "Asia/Manila"
-        timezoneWindows: "Philippine Standard Time"
+        timezoneLinux: "Asia/Kolkata"
+        timezoneMacos: "Asia/Kolkata"
+        timezoneWindows: "Indian Standard Time"
 
     - name: Export build branch
       run: echo "##[set-output name=branch;]$(echo ${GITHUB_REF#refs/heads/})"
@@ -147,6 +165,15 @@ jobs:
     - name: Install Debian/Ubuntu dependencies
       run: sudo apt-get install bzip2 lib32stdc++6 libc6-dev-i386 libncurses5 jq -y
 
+    - name: Setup KernelSU
+      run: |
+          set -eo pipefail
+          echo "  I: Building Mint kernel ${GITHUB_REF##*/}-${GITHUB_RUN_NUMBER}"
+          curl -LSs "https://raw.githubusercontent.com/tiann/KernelSU/main/kernel/setup.sh" | bash -s main
+          cd KernelSU
+          echo "KSU_VERSION=$(($(git rev-list --count HEAD) + 10200))" >> $GITHUB_ENV
+          cd -
+
     - name: Build Mint kernel
       run: |
           set -eo pipefail
@@ -156,7 +183,7 @@ jobs:
     - name: Prepare release package
       run: |
           mkdir -p ./release
-          mv -f `find ./ -iname Mint*-*.zip` ./release/
+          mv -f `find ./ -iname *.zip` ./release/
 
     - name: Upload build to Telegram
       uses: appleboy/telegram-action@master
@@ -184,9 +211,9 @@ jobs:
 
     - uses: szenius/set-timezone@v1.0
       with:
-        timezoneLinux: "Asia/Manila"
-        timezoneMacos: "Asia/Manila"
-        timezoneWindows: "Philippine Standard Time"
+        timezoneLinux: "Asia/Kolkata"
+        timezoneMacos: "Asia/Kolkata"
+        timezoneWindows: "Indian Standard Time"
 
     - name: Export build branch
       run: echo "##[set-output name=branch;]$(echo ${GITHUB_REF#refs/heads/})"
@@ -198,6 +225,15 @@ jobs:
     - name: Install Debian/Ubuntu dependencies
       run: sudo apt-get install bzip2 lib32stdc++6 libc6-dev-i386 libncurses5 jq -y
 
+    - name: Setup KernelSU
+      run: |
+          set -eo pipefail
+          echo "  I: Building Mint kernel ${GITHUB_REF##*/}-${GITHUB_RUN_NUMBER}"
+          curl -LSs "https://raw.githubusercontent.com/tiann/KernelSU/main/kernel/setup.sh" | bash -s main
+          cd KernelSU
+          echo "KSU_VERSION=$(($(git rev-list --count HEAD) + 10200))" >> $GITHUB_ENV
+          cd -
+
     - name: Build Mint kernel
       run: |
           set -eo pipefail
@@ -207,7 +243,7 @@ jobs:
     - name: Prepare release package
       run: |
           mkdir -p ./release
-          mv -f `find ./ -iname Mint*-*.zip` ./release/
+          mv -f `find ./ -iname *.zip` ./release/
 
     - name: Prepare build config artifact
       run: |

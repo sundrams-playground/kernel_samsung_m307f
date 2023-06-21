@@ -626,12 +626,11 @@ if [[ "${BUILD_KERNEL_MAGISK}" == 'true' || "${BUILD_KERNEL_KERNELSU}" == 'true'
 				update_magisk
 		  	fi
 
-			if [[ ${BUILD_KERNEL_KERNELSU} == 'true' ]]; then
-				curl -LSs "https://raw.githubusercontent.com/tiann/KernelSU/main/kernel/setup.sh" | bash -s main
-                                cd KernelSU
-                                echo "KSU_VERSION=$(($(git rev-list --count HEAD) + 10200))" >> $GITHUB_ENV
-                                cd -
-		  	fi
+			# if [[ ${BUILD_KERNEL_KERNELSU} == 'true' ]]; then
+			# 	curl -LSs "https://raw.githubusercontent.com/tiann/KernelSU/main/kernel/setup.sh" | bash -
+			# 	wget -q "https://github.com/rushiranpise/android_kernel_samsung_exynos9610_mint/raw/patch/kernelsu.patch" -O KernelSU.patch
+			# 	git apply ./KernelSU.patch
+		  	# fi
 		fi
 
 		if [[ ${BUILD_KERNEL_MAGISK} == 'true' ]]; then
