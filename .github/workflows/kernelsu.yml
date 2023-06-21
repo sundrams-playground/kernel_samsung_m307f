@@ -1,0 +1,227 @@
+name: KernelSU Development Build (Galaxy A50)
+
+on:
+  push:
+  workflow_dispatch:
+  schedule:
+    - cron: '0 23 * * *'
+
+jobs:
+
+  oneui-s-k-e:
+    name: Build One UI 4 (Enforcing ; KernelSU)
+    runs-on: ubuntu-latest
+
+    strategy:
+      fail-fast: true
+      
+    steps:
+    - uses: actions/checkout@v2
+
+    - uses: szenius/set-timezone@v1.0
+      with:
+        timezoneLinux: "Asia/Manila"
+        timezoneMacos: "Asia/Manila"
+        timezoneWindows: "Philippine Standard Time"
+
+    - name: Export build branch
+      run: echo "##[set-output name=branch;]$(echo ${GITHUB_REF#refs/heads/})"
+      id: branch_name
+
+    - name: Update Debian/Ubuntu Repositories
+      run: sudo apt-get update
+
+    - name: Install Debian/Ubuntu dependencies
+      run: sudo apt-get install bzip2 lib32stdc++6 libc6-dev-i386 libncurses5 jq -y
+
+    - name: Build Mint kernel
+      run: |
+          set -eo pipefail
+          echo "  I: Building Mint kernel ${GITHUB_REF##*/}-${GITHUB_RUN_NUMBER}"
+          ./build.sh --kernelsu --automated --device a50 --variant oneui --android 12
+
+    - name: Prepare release package
+      run: |
+          mkdir -p ./release
+          mv -f `find ./ -iname Mint*-*.zip` ./release/
+
+    - name: Upload release package
+      uses: actions/upload-artifact@v2
+      with:
+        name: One UI Four Kernel ZIPs
+        path: 'release'
+        if-no-files-found: error
+
+    - name: Prepare build config artifact
+      run: |
+          cp .config ./release/kernel_config_a50_oneui-s-k-e.txt
+
+    - name: Upload build to Telegram
+      uses: appleboy/telegram-action@master
+      env: 
+          TELEGRAM_TO: "${{ secrets.TELEGRAM_TO }}"
+          TELEGRAM_TOKEN: "${{ secrets.TELEGRAM_TOKEN }}"
+      with:
+        to: ${{ secrets.TELEGRAM_TO }}
+        token: ${{ secrets.TELEGRAM_TOKEN }}
+        message: |
+         KernelSU ${{ env.KSU_VERSION }}
+         
+        document: ./release/*.zip
+        if-no-files-found: error
+
+  oneui-s-k-p:
+    name: Build One UI 4 (Permissive ; KernelSU)
+    runs-on: ubuntu-latest
+
+    strategy:
+      fail-fast: true
+      
+    steps:
+    - uses: actions/checkout@v2
+
+    - uses: szenius/set-timezone@v1.0
+      with:
+        timezoneLinux: "Asia/Manila"
+        timezoneMacos: "Asia/Manila"
+        timezoneWindows: "Philippine Standard Time"
+
+    - name: Export build branch
+      run: echo "##[set-output name=branch;]$(echo ${GITHUB_REF#refs/heads/})"
+      id: branch_name
+
+    - name: Update Debian/Ubuntu Repositories
+      run: sudo apt-get update
+
+    - name: Install Debian/Ubuntu dependencies
+      run: sudo apt-get install bzip2 lib32stdc++6 libc6-dev-i386 libncurses5 jq -y
+
+    - name: Build Mint kernel
+      run: |
+          set -eo pipefail
+          echo "  I: Building Mint kernel ${GITHUB_REF##*/}-${GITHUB_RUN_NUMBER}"
+          ./build.sh --kernelsu --automated --device a50 --variant oneui --android 12 --permissive
+
+    - name: Prepare release package
+      run: |
+          mkdir -p ./release
+          mv -f `find ./ -iname Mint*-*.zip` ./release/
+
+    - name: Upload build to Telegram
+      uses: appleboy/telegram-action@master
+      env: 
+          TELEGRAM_TO: "${{ secrets.TELEGRAM_TO }}"
+          TELEGRAM_TOKEN: "${{ secrets.TELEGRAM_TOKEN }}"
+      with:
+        to: ${{ secrets.TELEGRAM_TO }}
+        token: ${{ secrets.TELEGRAM_TOKEN }}
+        message: |
+         KernelSU ${{ env.KSU_VERSION }}
+         
+        document: ./release/*.zip
+
+  aosp-s-k-e:
+    name: Build AOSP 12 (Enforcing ; KernelSU)
+    if: ${{ !contains(github.event.head_commit.message, '[skip rel]') }}
+    runs-on: ubuntu-latest
+
+    strategy:
+      fail-fast: true
+      
+    steps:
+    - uses: actions/checkout@v2
+
+    - uses: szenius/set-timezone@v1.0
+      with:
+        timezoneLinux: "Asia/Manila"
+        timezoneMacos: "Asia/Manila"
+        timezoneWindows: "Philippine Standard Time"
+
+    - name: Export build branch
+      run: echo "##[set-output name=branch;]$(echo ${GITHUB_REF#refs/heads/})"
+      id: branch_name
+
+    - name: Update Debian/Ubuntu Repositories
+      run: sudo apt-get update
+
+    - name: Install Debian/Ubuntu dependencies
+      run: sudo apt-get install bzip2 lib32stdc++6 libc6-dev-i386 libncurses5 jq -y
+
+    - name: Build Mint kernel
+      run: |
+          set -eo pipefail
+          echo "  I: Building Mint kernel ${GITHUB_REF##*/}-${GITHUB_RUN_NUMBER}"
+          ./build.sh --kernelsu --automated --device a50 --variant aosp --android 12
+
+    - name: Prepare release package
+      run: |
+          mkdir -p ./release
+          mv -f `find ./ -iname Mint*-*.zip` ./release/
+
+    - name: Upload build to Telegram
+      uses: appleboy/telegram-action@master
+      env: 
+          TELEGRAM_TO: "${{ secrets.TELEGRAM_TO }}"
+          TELEGRAM_TOKEN: "${{ secrets.TELEGRAM_TOKEN }}"
+      with:
+        to: ${{ secrets.TELEGRAM_TO }}
+        token: ${{ secrets.TELEGRAM_TOKEN }}
+        message: |
+         KernelSU ${{ env.KSU_VERSION }}
+         
+        document: ./release/*.zip
+        
+  aosp-s-k-p:
+    name: Build AOSP 12 (Permissive ; KernelSU)
+    if: ${{ !contains(github.event.head_commit.message, '[skip rel]') }}
+    runs-on: ubuntu-latest
+
+    strategy:
+      fail-fast: true
+      
+    steps:
+    - uses: actions/checkout@v2
+
+    - uses: szenius/set-timezone@v1.0
+      with:
+        timezoneLinux: "Asia/Manila"
+        timezoneMacos: "Asia/Manila"
+        timezoneWindows: "Philippine Standard Time"
+
+    - name: Export build branch
+      run: echo "##[set-output name=branch;]$(echo ${GITHUB_REF#refs/heads/})"
+      id: branch_name
+
+    - name: Update Debian/Ubuntu Repositories
+      run: sudo apt-get update
+
+    - name: Install Debian/Ubuntu dependencies
+      run: sudo apt-get install bzip2 lib32stdc++6 libc6-dev-i386 libncurses5 jq -y
+
+    - name: Build Mint kernel
+      run: |
+          set -eo pipefail
+          echo "  I: Building Mint kernel ${GITHUB_REF##*/}-${GITHUB_RUN_NUMBER}"
+          ./build.sh --kernelsu --automated --device a50 --variant aosp --android 12 --permissive
+
+    - name: Prepare release package
+      run: |
+          mkdir -p ./release
+          mv -f `find ./ -iname Mint*-*.zip` ./release/
+
+    - name: Prepare build config artifact
+      run: |
+          cp .config ./release/kernel_config_a50_aosp-s-k-p.txt
+
+    - name: Upload build to Telegram
+      uses: appleboy/telegram-action@master
+      env: 
+          TELEGRAM_TO: "${{ secrets.TELEGRAM_TO }}"
+          TELEGRAM_TOKEN: "${{ secrets.TELEGRAM_TOKEN }}"
+      with:
+        to: ${{ secrets.TELEGRAM_TO }}
+        token: ${{ secrets.TELEGRAM_TOKEN }}
+        message: |
+         KernelSU ${{ env.KSU_VERSION }}
+         
+        document: ./release/*.zip
