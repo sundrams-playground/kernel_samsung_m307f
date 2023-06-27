@@ -27,6 +27,8 @@ jobs:
       
     steps:
     - uses: actions/checkout@v2
+      with:
+        submodules: 'true'
 
     - uses: szenius/set-timezone@v1.0
       with:
@@ -88,6 +90,8 @@ jobs:
       
     steps:
     - uses: actions/checkout@v2
+      with:
+        submodules: 'true'
 
     - uses: szenius/set-timezone@v1.0
       with:
@@ -145,6 +149,8 @@ jobs:
       
     steps:
     - uses: actions/checkout@v2
+      with:
+        submodules: 'true'
 
     - uses: szenius/set-timezone@v1.0
       with:
@@ -202,6 +208,8 @@ jobs:
       
     steps:
     - uses: actions/checkout@v2
+      with:
+        submodules: 'true'
 
     - uses: szenius/set-timezone@v1.0
       with:
