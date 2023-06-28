@@ -4,19 +4,19 @@ on:
   push:
 
 jobs:
-#   notify:
-#     name: notify
-#     runs-on: ubuntu-latest
-#     steps:
-#      - name: Send build message to Telegram
-#        uses: appleboy/telegram-action@master
-#        env: 
-#           TELEGRAM_TO: "${{ secrets.TELEGRAM_TO }}"
-#           TELEGRAM_TOKEN: "${{ secrets.TELEGRAM_TOKEN }}"
-#        with:
-#          to: ${{ secrets.TELEGRAM_TO }}
-#          token: ${{ secrets.TELEGRAM_TOKEN }}
-#          message: Automated Build Started for KernelSU!
+  notify:
+    name: notify
+    runs-on: ubuntu-latest
+    steps:
+     - name: Send build message to Telegram
+       uses: appleboy/telegram-action@master
+       env: 
+          TELEGRAM_TO: "${{ secrets.TELEGRAM_TO }}"
+          TELEGRAM_TOKEN: "${{ secrets.TELEGRAM_TOKEN }}"
+       with:
+         to: ${{ secrets.TELEGRAM_TO }}
+         token: ${{ secrets.TELEGRAM_TOKEN }}
+         message: Automated Build Started for KernelSU!
 
   oneui-s-k-e:
     name: Build One UI 4 (Enforcing ; KernelSU)
@@ -82,188 +82,188 @@ jobs:
         document: ./release/*.zip
         if-no-files-found: error
 
-#   oneui-s-k-p:
-#     name: Build One UI 4 (Permissive ; KernelSU)
-#     runs-on: ubuntu-latest
+  oneui-s-k-p:
+    name: Build One UI 4 (Permissive ; KernelSU)
+    runs-on: ubuntu-latest
 
-#     strategy:
-#       fail-fast: true
+    strategy:
+      fail-fast: true
       
-#     steps:
-#     - uses: actions/checkout@v2
-#       with:
-#         fetch-depth: '0' 
-#         submodules: 'true'
+    steps:
+    - uses: actions/checkout@v2
+      with:
+        fetch-depth: '0' 
+        submodules: 'true'
 
-#     - uses: szenius/set-timezone@v1.0
-#       with:
-#         timezoneLinux: "Asia/Kolkata"
-#         timezoneMacos: "Asia/Kolkata"
-#         timezoneWindows: "Indian Standard Time"
+    - uses: szenius/set-timezone@v1.0
+      with:
+        timezoneLinux: "Asia/Kolkata"
+        timezoneMacos: "Asia/Kolkata"
+        timezoneWindows: "Indian Standard Time"
 
-#     - name: Export build branch
-#       run: echo "##[set-output name=branch;]$(echo ${GITHUB_REF#refs/heads/})"
-#       id: branch_name
+    - name: Export build branch
+      run: echo "##[set-output name=branch;]$(echo ${GITHUB_REF#refs/heads/})"
+      id: branch_name
 
-#     - name: Update Debian/Ubuntu Repositories
-#       run: sudo apt-get update
+    - name: Update Debian/Ubuntu Repositories
+      run: sudo apt-get update
 
-#     - name: Install Debian/Ubuntu dependencies
-#       run: sudo apt-get install bzip2 lib32stdc++6 libc6-dev-i386 libncurses5 jq -y
+    - name: Install Debian/Ubuntu dependencies
+      run: sudo apt-get install bzip2 lib32stdc++6 libc6-dev-i386 libncurses5 jq -y
 
-#     - name: Setup KernelSU
-#       run: |
-#           set -eo pipefail
-#           echo "  I: Building Mint kernel ${GITHUB_REF##*/}-${GITHUB_RUN_NUMBER}"
-#           cd KernelSU
-#           echo "KSU_VERSION=$(($(git rev-list --count HEAD) + 10200))" >> $GITHUB_ENV
-#           cd -
+    - name: Setup KernelSU
+      run: |
+          set -eo pipefail
+          echo "  I: Building Mint kernel ${GITHUB_REF##*/}-${GITHUB_RUN_NUMBER}"
+          cd KernelSU
+          echo "KSU_VERSION=$(($(git rev-list --count HEAD) + 10200))" >> $GITHUB_ENV
+          cd -
 
-#     - name: Build Mint kernel
-#       run: |
-#           set -eo pipefail
-#           echo "  I: Building Mint kernel ${GITHUB_REF##*/}-${GITHUB_RUN_NUMBER}"
-#           ./build.sh --kernelsu --automated --device a50 --variant oneui --android 12 --permissive
+    - name: Build Mint kernel
+      run: |
+          set -eo pipefail
+          echo "  I: Building Mint kernel ${GITHUB_REF##*/}-${GITHUB_RUN_NUMBER}"
+          ./build.sh --kernelsu --automated --device a50 --variant oneui --android 12 --permissive
 
-#     - name: Prepare release package
-#       run: |
-#           mkdir -p ./release
-#           mv -f `find ./ -iname *.zip` ./release/
+    - name: Prepare release package
+      run: |
+          mkdir -p ./release
+          mv -f `find ./ -iname *.zip` ./release/
 
-#     - name: Upload build to Telegram
-#       uses: appleboy/telegram-action@master
-#       env: 
-#           TELEGRAM_TO: "${{ secrets.TELEGRAM_TO }}"
-#           TELEGRAM_TOKEN: "${{ secrets.TELEGRAM_TOKEN }}"
-#       with:
-#         to: ${{ secrets.TELEGRAM_TO }}
-#         token: ${{ secrets.TELEGRAM_TOKEN }}
-#         message: " "
-#         document: ./release/*.zip
+    - name: Upload build to Telegram
+      uses: appleboy/telegram-action@master
+      env: 
+          TELEGRAM_TO: "${{ secrets.TELEGRAM_TO }}"
+          TELEGRAM_TOKEN: "${{ secrets.TELEGRAM_TOKEN }}"
+      with:
+        to: ${{ secrets.TELEGRAM_TO }}
+        token: ${{ secrets.TELEGRAM_TOKEN }}
+        message: " "
+        document: ./release/*.zip
 
-#   aosp-s-k-e:
-#     name: Build AOSP 12 (Enforcing ; KernelSU)
-#     if: ${{ !contains(github.event.head_commit.message, '[skip rel]') }}
-#     runs-on: ubuntu-latest
+  aosp-s-k-e:
+    name: Build AOSP 12 (Enforcing ; KernelSU)
+    if: ${{ !contains(github.event.head_commit.message, '[skip rel]') }}
+    runs-on: ubuntu-latest
 
-#     strategy:
-#       fail-fast: true
+    strategy:
+      fail-fast: true
       
-#     steps:
-#     - uses: actions/checkout@v2
-#       with:
-#         fetch-depth: '0' 
-#         submodules: 'true'
+    steps:
+    - uses: actions/checkout@v2
+      with:
+        fetch-depth: '0' 
+        submodules: 'true'
 
-#     - uses: szenius/set-timezone@v1.0
-#       with:
-#         timezoneLinux: "Asia/Kolkata"
-#         timezoneMacos: "Asia/Kolkata"
-#         timezoneWindows: "Indian Standard Time"
+    - uses: szenius/set-timezone@v1.0
+      with:
+        timezoneLinux: "Asia/Kolkata"
+        timezoneMacos: "Asia/Kolkata"
+        timezoneWindows: "Indian Standard Time"
 
-#     - name: Export build branch
-#       run: echo "##[set-output name=branch;]$(echo ${GITHUB_REF#refs/heads/})"
-#       id: branch_name
+    - name: Export build branch
+      run: echo "##[set-output name=branch;]$(echo ${GITHUB_REF#refs/heads/})"
+      id: branch_name
 
-#     - name: Update Debian/Ubuntu Repositories
-#       run: sudo apt-get update
+    - name: Update Debian/Ubuntu Repositories
+      run: sudo apt-get update
 
-#     - name: Install Debian/Ubuntu dependencies
-#       run: sudo apt-get install bzip2 lib32stdc++6 libc6-dev-i386 libncurses5 jq -y
+    - name: Install Debian/Ubuntu dependencies
+      run: sudo apt-get install bzip2 lib32stdc++6 libc6-dev-i386 libncurses5 jq -y
 
-#     - name: Setup KernelSU
-#       run: |
-#           set -eo pipefail
-#           echo "  I: Building Mint kernel ${GITHUB_REF##*/}-${GITHUB_RUN_NUMBER}"
-#           cd KernelSU
-#           echo "KSU_VERSION=$(($(git rev-list --count HEAD) + 10200))" >> $GITHUB_ENV
-#           cd -
+    - name: Setup KernelSU
+      run: |
+          set -eo pipefail
+          echo "  I: Building Mint kernel ${GITHUB_REF##*/}-${GITHUB_RUN_NUMBER}"
+          cd KernelSU
+          echo "KSU_VERSION=$(($(git rev-list --count HEAD) + 10200))" >> $GITHUB_ENV
+          cd -
 
-#     - name: Build Mint kernel
-#       run: |
-#           set -eo pipefail
-#           echo "  I: Building Mint kernel ${GITHUB_REF##*/}-${GITHUB_RUN_NUMBER}"
-#           ./build.sh --kernelsu --automated --device a50 --variant aosp --android 12
+    - name: Build Mint kernel
+      run: |
+          set -eo pipefail
+          echo "  I: Building Mint kernel ${GITHUB_REF##*/}-${GITHUB_RUN_NUMBER}"
+          ./build.sh --kernelsu --automated --device a50 --variant aosp --android 12
 
-#     - name: Prepare release package
-#       run: |
-#           mkdir -p ./release
-#           mv -f `find ./ -iname *.zip` ./release/
+    - name: Prepare release package
+      run: |
+          mkdir -p ./release
+          mv -f `find ./ -iname *.zip` ./release/
 
-#     - name: Upload build to Telegram
-#       uses: appleboy/telegram-action@master
-#       env: 
-#           TELEGRAM_TO: "${{ secrets.TELEGRAM_TO }}"
-#           TELEGRAM_TOKEN: "${{ secrets.TELEGRAM_TOKEN }}"
-#       with:
-#         to: ${{ secrets.TELEGRAM_TO }}
-#         token: ${{ secrets.TELEGRAM_TOKEN }}
-#         message: " "
-#         document: ./release/*.zip
+    - name: Upload build to Telegram
+      uses: appleboy/telegram-action@master
+      env: 
+          TELEGRAM_TO: "${{ secrets.TELEGRAM_TO }}"
+          TELEGRAM_TOKEN: "${{ secrets.TELEGRAM_TOKEN }}"
+      with:
+        to: ${{ secrets.TELEGRAM_TO }}
+        token: ${{ secrets.TELEGRAM_TOKEN }}
+        message: " "
+        document: ./release/*.zip
         
-#   aosp-s-k-p:
-#     name: Build AOSP 12 (Permissive ; KernelSU)
-#     if: ${{ !contains(github.event.head_commit.message, '[skip rel]') }}
-#     runs-on: ubuntu-latest
+  aosp-s-k-p:
+    name: Build AOSP 12 (Permissive ; KernelSU)
+    if: ${{ !contains(github.event.head_commit.message, '[skip rel]') }}
+    runs-on: ubuntu-latest
 
-#     strategy:
-#       fail-fast: true
+    strategy:
+      fail-fast: true
       
-#     steps:
-#     - uses: actions/checkout@v2
-#       with:
-#         fetch-depth: '0' 
-#         submodules: 'true'
+    steps:
+    - uses: actions/checkout@v2
+      with:
+        fetch-depth: '0' 
+        submodules: 'true'
 
-#     - uses: szenius/set-timezone@v1.0
-#       with:
-#         timezoneLinux: "Asia/Kolkata"
-#         timezoneMacos: "Asia/Kolkata"
-#         timezoneWindows: "Indian Standard Time"
+    - uses: szenius/set-timezone@v1.0
+      with:
+        timezoneLinux: "Asia/Kolkata"
+        timezoneMacos: "Asia/Kolkata"
+        timezoneWindows: "Indian Standard Time"
 
-#     - name: Export build branch
-#       run: echo "##[set-output name=branch;]$(echo ${GITHUB_REF#refs/heads/})"
-#       id: branch_name
+    - name: Export build branch
+      run: echo "##[set-output name=branch;]$(echo ${GITHUB_REF#refs/heads/})"
+      id: branch_name
 
-#     - name: Update Debian/Ubuntu Repositories
-#       run: sudo apt-get update
+    - name: Update Debian/Ubuntu Repositories
+      run: sudo apt-get update
 
-#     - name: Install Debian/Ubuntu dependencies
-#       run: sudo apt-get install bzip2 lib32stdc++6 libc6-dev-i386 libncurses5 jq -y
+    - name: Install Debian/Ubuntu dependencies
+      run: sudo apt-get install bzip2 lib32stdc++6 libc6-dev-i386 libncurses5 jq -y
 
-#     - name: Setup KernelSU
-#       run: |
-#           set -eo pipefail
-#           echo "  I: Building Mint kernel ${GITHUB_REF##*/}-${GITHUB_RUN_NUMBER}"
-#           cd KernelSU
-#           echo "KSU_VERSION=$(($(git rev-list --count HEAD) + 10200))" >> $GITHUB_ENV
-#           cd -
+    - name: Setup KernelSU
+      run: |
+          set -eo pipefail
+          echo "  I: Building Mint kernel ${GITHUB_REF##*/}-${GITHUB_RUN_NUMBER}"
+          cd KernelSU
+          echo "KSU_VERSION=$(($(git rev-list --count HEAD) + 10200))" >> $GITHUB_ENV
+          cd -
 
-#     - name: Build Mint kernel
-#       run: |
-#           set -eo pipefail
-#           echo "  I: Building Mint kernel ${GITHUB_REF##*/}-${GITHUB_RUN_NUMBER}"
-#           ./build.sh --kernelsu --automated --device a50 --variant aosp --android 12 --permissive
+    - name: Build Mint kernel
+      run: |
+          set -eo pipefail
+          echo "  I: Building Mint kernel ${GITHUB_REF##*/}-${GITHUB_RUN_NUMBER}"
+          ./build.sh --kernelsu --automated --device a50 --variant aosp --android 12 --permissive
 
-#     - name: Prepare release package
-#       run: |
-#           mkdir -p ./release
-#           mv -f `find ./ -iname *.zip` ./release/
+    - name: Prepare release package
+      run: |
+          mkdir -p ./release
+          mv -f `find ./ -iname *.zip` ./release/
 
-#     - name: Prepare build config artifact
-#       run: |
-#           cp .config ./release/kernel_config_a50_aosp-s-k-p.txt
+    - name: Prepare build config artifact
+      run: |
+          cp .config ./release/kernel_config_a50_aosp-s-k-p.txt
 
-#     - name: Upload build to Telegram
-#       uses: appleboy/telegram-action@master
-#       env: 
-#           TELEGRAM_TO: "${{ secrets.TELEGRAM_TO }}"
-#           TELEGRAM_TOKEN: "${{ secrets.TELEGRAM_TOKEN }}"
-#       with:
-#         to: ${{ secrets.TELEGRAM_TO }}
-#         token: ${{ secrets.TELEGRAM_TOKEN }}
-#         message: " "
-#         document: ./release/*.zip
+    - name: Upload build to Telegram
+      uses: appleboy/telegram-action@master
+      env: 
+          TELEGRAM_TO: "${{ secrets.TELEGRAM_TO }}"
+          TELEGRAM_TOKEN: "${{ secrets.TELEGRAM_TOKEN }}"
+      with:
+        to: ${{ secrets.TELEGRAM_TO }}
+        token: ${{ secrets.TELEGRAM_TOKEN }}
+        message: " "
+        document: ./release/*.zip
 
 #   del_runs:
 #     runs-on: ubuntu-latest
