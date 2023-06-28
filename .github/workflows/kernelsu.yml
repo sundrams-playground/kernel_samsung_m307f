@@ -28,6 +28,7 @@ jobs:
     steps:
     - uses: actions/checkout@v2
       with:
+        fetch-depth: '1' 
         submodules: 'true'
 
     - uses: szenius/set-timezone@v1.0
@@ -91,6 +92,7 @@ jobs:
 #     steps:
 #     - uses: actions/checkout@v2
 #       with:
+#         fetch-depth: '1' 
 #         submodules: 'true'
 
 #     - uses: szenius/set-timezone@v1.0
@@ -150,6 +152,7 @@ jobs:
 #     steps:
 #     - uses: actions/checkout@v2
 #       with:
+#         fetch-depth: '1' 
 #         submodules: 'true'
 
 #     - uses: szenius/set-timezone@v1.0
@@ -209,6 +212,7 @@ jobs:
 #     steps:
 #     - uses: actions/checkout@v2
 #       with:
+#         fetch-depth: '1' 
 #         submodules: 'true'
 
 #     - uses: szenius/set-timezone@v1.0
