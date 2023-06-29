@@ -49,7 +49,7 @@ jobs:
          to: ${{ secrets.TELEGRAM_TO }}
          token: ${{ secrets.TELEGRAM_TOKEN }}
          message: " "
-         document: ./tmp/*.apk
+         document: ./tmp/manager/*.apk
          if-no-files-found: error       
  
 #   oneui-s-k-e:
