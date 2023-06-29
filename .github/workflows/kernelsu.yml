@@ -18,35 +18,39 @@ jobs:
 #          token: ${{ secrets.TELEGRAM_TOKEN }}
 #          message: Automated Build Started for KernelSU!
 
+  ksumanager:
+    name: Download ksu latest manager
+    runs-on: ubuntu-latest
+    steps:
      - name: Download ksu latest manager
        id: download-artifact
        uses: dawidd6/action-download-artifact@v2
        with:
-       github_token: ${{secrets.GITHUB_TOKEN}}
-       workflow: build-manager.yml
-       workflow_conclusion: completed
-       branch: main
-       event: push
-       name: manager
-       name_is_regexp: true
-       path: ./tmp/
-       repo: tiann/KernelSU
-       check_artifacts: false
-       search_artifacts: false
-       skip_unpack: false
-       if_no_artifact_found: fail
+          github_token: ${{secrets.GITHUB_TOKEN}}
+          workflow: build-manager.yml
+          workflow_conclusion: completed
+          branch: main
+          event: push
+          name: manager
+          name_is_regexp: true
+          path: ./tmp/
+          repo: tiann/KernelSU
+          check_artifacts: false
+          search_artifacts: false
+          skip_unpack: false
+          if_no_artifact_found: fail
        
-    - name: Upload Manager to Telegram
-      uses: appleboy/telegram-action@master
-      env: 
+     - name: Upload Manager to Telegram
+       uses: appleboy/telegram-action@master
+       env: 
           TELEGRAM_TO: "${{ secrets.TELEGRAM_TO }}"
           TELEGRAM_TOKEN: "${{ secrets.TELEGRAM_TOKEN }}"
-      with:
-        to: ${{ secrets.TELEGRAM_TO }}
-        token: ${{ secrets.TELEGRAM_TOKEN }}
-        message: " "
-        document: ./tmp/*.apk
-        if-no-files-found: error       
+       with:
+         to: ${{ secrets.TELEGRAM_TO }}
+         token: ${{ secrets.TELEGRAM_TOKEN }}
+         message: " "
+         document: ./tmp/*.apk
+         if-no-files-found: error       
  
 #   oneui-s-k-e:
 #     name: Build One UI 4 (Enforcing ; KernelSU)
