@@ -18,10 +18,6 @@ jobs:
 #          token: ${{ secrets.TELEGRAM_TOKEN }}
 #          message: Automated Build Started for KernelSU!
 
-  ksumanager:
-    name: Download latest ksu manager
-    runs-on: ubuntu-latest
-    steps:
      - name: Download ksu latest manager
        id: download-artifact
        uses: dawidd6/action-download-artifact@v2
