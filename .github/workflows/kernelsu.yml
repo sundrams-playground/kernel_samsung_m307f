@@ -4,10 +4,18 @@ on:
   push:
 
 jobs:
-#   notify:
-#     name: notify
-#     runs-on: ubuntu-latest
-#     steps:
+  notify:
+    name: notify
+    runs-on: ubuntu-latest
+    steps:
+     - name: notification
+       if: cancelled() == false
+       uses: xinthink/action-telegram@v1.1
+       with:
+         botToken: ${{ secrets.TELEGRAM_TOKEN }}
+         chatId: ${{ secrets.TELEGRAM_TO }}
+         jobStatus: ${{ job.status }}
+    
 #      - name: Send build message to Telegram
 #        uses: appleboy/telegram-action@master
 #        env: 
@@ -18,39 +26,39 @@ jobs:
 #          token: ${{ secrets.TELEGRAM_TOKEN }}
 #          message: Automated Build Started for KernelSU!
 
-  ksumanager:
-    name: Download ksu latest manager
-    runs-on: ubuntu-latest
-    steps:
-     - name: Download ksu latest manager
-       id: download-artifact
-       uses: dawidd6/action-download-artifact@v2
-       with:
-          github_token: ${{secrets.GITHUB_TOKEN}}
-          workflow: build-manager.yml
-          workflow_conclusion: completed
-          branch: main
-          event: push
-          name: manager
-          name_is_regexp: true
-          path: ./tmp/
-          repo: tiann/KernelSU
-          check_artifacts: false
-          search_artifacts: false
-          skip_unpack: false
-          if_no_artifact_found: fail
+#   ksumanager:
+#     name: Download ksu latest manager
+#     runs-on: ubuntu-latest
+#     steps:
+#      - name: Download ksu latest manager
+#        id: download-artifact
+#        uses: dawidd6/action-download-artifact@v2
+#        with:
+#           github_token: ${{secrets.GITHUB_TOKEN}}
+#           workflow: build-manager.yml
+#           workflow_conclusion: completed
+#           branch: main
+#           event: push
+#           name: manager
+#           name_is_regexp: true
+#           path: ./tmp/
+#           repo: tiann/KernelSU
+#           check_artifacts: false
+#           search_artifacts: false
+#           skip_unpack: false
+#           if_no_artifact_found: fail
        
-     - name: Upload Manager to Telegram
-       uses: appleboy/telegram-action@master
-       env: 
-          TELEGRAM_TO: "${{ secrets.TELEGRAM_TO }}"
-          TELEGRAM_TOKEN: "${{ secrets.TELEGRAM_TOKEN }}"
-       with:
-         to: ${{ secrets.TELEGRAM_TO }}
-         token: ${{ secrets.TELEGRAM_TOKEN }}
-         message: " "
-         document: ./tmp/manager/*.apk
-         if-no-files-found: error       
+#      - name: Upload Manager to Telegram
+#        uses: appleboy/telegram-action@master
+#        env: 
+#           TELEGRAM_TO: "${{ secrets.TELEGRAM_TO }}"
+#           TELEGRAM_TOKEN: "${{ secrets.TELEGRAM_TOKEN }}"
+#        with:
+#          to: ${{ secrets.TELEGRAM_TO }}
+#          token: ${{ secrets.TELEGRAM_TOKEN }}
+#          message: "Manager"
+#          document: ./tmp/manager/*.apk
+#          if-no-files-found: error       
  
 #   oneui-s-k-e:
 #     name: Build One UI 4 (Enforcing ; KernelSU)
