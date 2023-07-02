@@ -317,7 +317,7 @@ jobs:
          if-no-files-found: error
 
   del_runs:
-    needs: [oneui-s-k-e, oneui-s-k-p , aosp-s-k-e , aosp-s-k-p , ksumanager]
+#     needs: [oneui-s-k-e, oneui-s-k-p , aosp-s-k-e , aosp-s-k-p , ksumanager]
     runs-on: ubuntu-latest
     permissions:
       actions: write
@@ -325,10 +325,10 @@ jobs:
       - name: Delete workflow runs
         uses: Mattraks/delete-workflow-runs@v2
         with:
-          token: ${{ github.token }}
+          token: ${{ secrets.ACCESS_TOKEN }}
           repository: ${{ github.repository }}
           retain_days: 1
           keep_minimum_runs: 1
           delete_workflow_pattern: all
           delete_workflow_by_state_pattern: all
-          delete_run_by_conclusion_pattern : all
+          delete_run_by_conclusion_pattern: all
