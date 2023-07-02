@@ -16,7 +16,23 @@ jobs:
        with:
          to: ${{ secrets.TELEGRAM_TO }}
          token: ${{ secrets.TELEGRAM_TOKEN }}
-         message: Automated Build Started for KernelSU! 
+         message: Automated Build Started for KernelSU!
+     
+  failure-notification:
+    name: Failure Notification
+    needs: [oneui-s-k-e, oneui-s-k-p, aosp-s-k-e, aosp-s-k-p]
+    runs-on: ubuntu-latest
+    if: failure()
+    steps:
+      - name: Send failure message to Telegram
+        uses: appleboy/telegram-action@master
+        env: 
+          TELEGRAM_TO: "${{ secrets.TELEGRAM_TO }}"
+          TELEGRAM_TOKEN: "${{ secrets.TELEGRAM_TOKEN }}"
+        with:
+          to: ${{ secrets.TELEGRAM_TO }}
+          token: ${{ secrets.TELEGRAM_TOKEN }}
+          message: "Build failed for KernelSU."   
  
   oneui-s-k-e:
     name: Build One UI 4 (Enforcing ; KernelSU)
