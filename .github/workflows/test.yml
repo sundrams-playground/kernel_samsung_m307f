@@ -27,11 +27,15 @@ jobs:
         id: latest-commit
         run: echo "::set-output name=commit::$(git rev-parse HEAD)"
 
-      - name: Get Commits Since Yesterday
-        id: commits
+#       - name: Get Commits Since Yesterday
+#         id: commits
+#         run: |
+#           yesterday=$(date -d "yesterday" +%Y-%m-%d)
+#           git log --format="%s" --since="$yesterday" > commits.txt
+          
+      - name: Get Commits Since Two Days Ago
         run: |
-          yesterday=$(date -d "yesterday" +%Y-%m-%d)
-          git log --format="%s" --since="$yesterday" > commits.txt
+         git log --pretty=format:"- %s" --since="2 days ago" > commits.txt    
 
       - name: Send Commits to Telegram
         run: |
@@ -41,7 +45,7 @@ jobs:
          done | tee commits_message.txt
          cat commits_message.txt | xargs -0 echo | sed 's/"/\\"/g' > escaped_commits.txt
          curl -s -X POST "https://api.telegram.org/bot${{ secrets.TELEGRAM_TOKEN }}/sendMessage" -d "chat_id=${{ secrets.TELEGRAM_TO }}" -d "text=$(cat escaped_commits.txt)"
-         env:
+        env:
              TELEGRAM_TO: "${{ secrets.TELEGRAM_TO }}"
              TELEGRAM_TOKEN: "${{ secrets.TELEGRAM_TOKEN }}"
 
