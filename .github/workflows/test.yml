@@ -34,14 +34,17 @@ jobs:
           git log --format="%s" --since="$yesterday" > commits.txt
 
       - name: Send Commits to Telegram
-        uses: appleboy/telegram-action@master
-        env:
-          TELEGRAM_TO: "${{ secrets.TELEGRAM_TO }}"
-          TELEGRAM_TOKEN: "${{ secrets.TELEGRAM_TOKEN }}"
-        with:
-          to: ${{ secrets.TELEGRAM_TO }}
-          token: ${{ secrets.TELEGRAM_TOKEN }}
-          message: "Latest Commits in tiann/KernelSU:\n$(cat commits.txt)"
+        run: |
+         echo "Latest Commits in tiann/KernelSU:"
+         cat commits.txt | while IFS= read -r line; do
+         echo "- $line"
+         done | tee commits_message.txt
+         cat commits_message.txt | xargs -0 echo | sed 's/"/\\"/g' > escaped_commits.txt
+         curl -s -X POST "https://api.telegram.org/bot${{ secrets.TELEGRAM_TOKEN }}/sendMessage" -d "chat_id=${{ secrets.TELEGRAM_TO }}" -d "text=$(cat escaped_commits.txt)"
+         env:
+             TELEGRAM_TO: "${{ secrets.TELEGRAM_TO }}"
+             TELEGRAM_TOKEN: "${{ secrets.TELEGRAM_TOKEN }}"
+
 
   delete-workspace:
     name: Delete Workspace
