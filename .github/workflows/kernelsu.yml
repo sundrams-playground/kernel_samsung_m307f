@@ -5,7 +5,7 @@ on:
 
 jobs:
   notify:
-    name: notify
+    name: Build Notification
     runs-on: ubuntu-latest
     steps:
       - name: Send build message to Telegram
@@ -17,7 +17,7 @@ jobs:
           to: ${{ secrets.TELEGRAM_TO }}
           token: ${{ secrets.TELEGRAM_TOKEN }}
           message: "🛠️ Build Started for KernelSU 👷"
-     
+
   failure-notification:
     name: Failure Notification
     needs: [build-kernelsu]
@@ -33,7 +33,7 @@ jobs:
           to: ${{ secrets.TELEGRAM_TO }}
           token: ${{ secrets.TELEGRAM_TOKEN }}
           message: "🛑 Build failed for KernelSU 😞"   
- 
+
   build-kernelsu:
     name: Build KernelSU
     runs-on: ubuntu-latest
@@ -74,13 +74,18 @@ jobs:
           cd -
 
       - name: Build Mint kernel
+        id: build-kernel
         run: |
           set -eo pipefail
           echo "  I: Building Mint kernel ${GITHUB_REF##*/}-${GITHUB_RUN_NUMBER}"
+          start_time=$(date +%s)
           ./build.sh --kernelsu --automated --device a50 --variant ${{ matrix.variant }} --android 12
           if [[ "${{ matrix.enforcing }}" == "p" ]]; then
-            ./build.sh --permissive
+           ./build.sh --kernelsu --automated --device a50 --variant ${{ matrix.variant }} --android 12 --permissive
           fi
+          end_time=$(date +%s)
+          duration=$((end_time - start_time))
+          echo "::set-output name=duration::$duration"
 
       - name: Prepare release package
         run: |
@@ -99,45 +104,45 @@ jobs:
         with:
           to: ${{ secrets.TELEGRAM_TO }}
           token: ${{ secrets.TELEGRAM_TOKEN }}
-          message: " "
+          message: "Build completed in $((duration / 60)) minutes and $((duration % 60)) seconds."
           document: ./release/*.zip
-          
+
   ksumanager:
     name: Download ksu latest manager
     needs: [build-kernelsu]
     runs-on: ubuntu-latest
     steps:
-     - name: Download ksu latest manager
-       id: download-artifact
-       uses: dawidd6/action-download-artifact@v2
-       with:
+      - name: Download ksu latest manager
+        id: download-artifact
+        uses: dawidd6/action-download-artifact@v2
+        with:
           github_token: ${{secrets.GITHUB_TOKEN}}
           workflow: build-manager.yml
           workflow_conclusion: completed
           branch: main
           event: push
           name: manager
-          name_is_regexp: true
           path: ./tmp/
           repo: tiann/KernelSU
           check_artifacts: false
           search_artifacts: false
           skip_unpack: false
           if_no_artifact_found: fail
-       
-     - name: Upload Manager to Telegram
-       uses: appleboy/telegram-action@master
-       env: 
+
+      - name: Upload Manager to Telegram
+        uses: appleboy/telegram-action@master
+        env: 
           TELEGRAM_TO: "${{ secrets.TELEGRAM_TO }}"
           TELEGRAM_TOKEN: "${{ secrets.TELEGRAM_TOKEN }}"
-       with:
-         to: ${{ secrets.TELEGRAM_TO }}
-         token: ${{ secrets.TELEGRAM_TOKEN }}
-         message: "Manager"
-         document: ./tmp/manager/*.apk
-         if-no-files-found: error       
+        with:
+          to: ${{ secrets.TELEGRAM_TO }}
+          token: ${{ secrets.TELEGRAM_TOKEN }}
+          message: "Manager"
+          document: ./tmp/manager/*.apk
+          if-no-files-found: error
 
   del_runs:
+    name: Delete workflow runs
     runs-on: ubuntu-latest
     permissions:
       actions: write
