@@ -1996,7 +1996,7 @@ EXPORT_SYMBOL_GPL(clk_is_match);
 
 /***        debugfs support        ***/
 
-#ifdef CONFIG_DEBUG_FS
+#if defined(CONFIG_DEBUG_FS) && !defined(CONFIG_ARCH_EXYNOS)
 #include <linux/debugfs.h>
 
 static struct dentry *rootdir;
@@ -2185,7 +2185,7 @@ static int clk_debug_create_one(struct clk_core *core, struct dentry *pdentry)
 	if (!d)
 		goto err_out;
 
-	d = debugfs_create_x32("clk_flags", S_IRUGO, core->dentry,
+	d = debugfs_create_x32("clk_flags", S_IRUSR, core->dentry,
 			(u32 *)&core->flags);
 	if (!d)
 		goto err_out;

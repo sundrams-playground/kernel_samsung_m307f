@@ -1388,7 +1388,7 @@ static int loop_set_block_size(struct loop_device *lo, unsigned long arg)
 
 	blk_mq_freeze_queue(lo->lo_queue);
 
-	/* invalidate_bdev should have truncated all the pages */
+	/* kill_bdev should have truncated all the pages */
 	if (lo->lo_device->bd_inode->i_mapping->nrpages) {
 		err = -EAGAIN;
 		pr_warn("%s: loop%d (%s) has still dirty pages (nrpages=%lu)\n",
@@ -1617,7 +1617,6 @@ static int lo_compat_ioctl(struct block_device *bdev, fmode_t mode,
 		arg = (unsigned long) compat_ptr(arg);
 	case LOOP_SET_FD:
 	case LOOP_CHANGE_FD:
-	case LOOP_SET_BLOCK_SIZE:
 	case LOOP_SET_DIRECT_IO:
 		err = lo_ioctl(bdev, mode, cmd, arg);
 		break;
