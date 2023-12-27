@@ -49,6 +49,8 @@
 #include <linux/moduleparam.h>
 #include <linux/uaccess.h>
 #include <linux/nmi.h>
+#include <linux/sec_debug.h>
+#include <linux/debug-snapshot.h>
 
 #include "workqueue_internal.h"
 
@@ -289,7 +291,7 @@ module_param_named(disable_numa, wq_disable_numa, bool, 0444);
 
 /* see the comment above the definition of WQ_POWER_EFFICIENT */
 static bool wq_power_efficient = IS_ENABLED(CONFIG_WQ_POWER_EFFICIENT_DEFAULT);
-module_param_named(power_efficient, wq_power_efficient, bool, 0444);
+module_param_named(power_efficient, wq_power_efficient, bool, 0644);
 
 static bool wq_online;			/* can kworkers be created yet? */
 
@@ -1532,10 +1534,8 @@ static void __queue_delayed_work(int cpu, struct workqueue_struct *wq,
 	struct work_struct *work = &dwork->work;
 
 	WARN_ON_ONCE(!wq);
-#ifndef CONFIG_CFI_CLANG
-	WARN_ON_ONCE(timer->function != delayed_work_timer_fn);
-#endif
-	WARN_ON_ONCE(timer->data != (unsigned long)dwork);
+	WARN_ON_ONCE(timer->function != delayed_work_timer_fn ||
+		     timer->data != (unsigned long)dwork);
 	WARN_ON_ONCE(timer_pending(timer));
 	WARN_ON_ONCE(!list_empty(&work->entry));
 
@@ -1628,6 +1628,40 @@ bool mod_delayed_work_on(int cpu, struct workqueue_struct *wq,
 	return ret;
 }
 EXPORT_SYMBOL_GPL(mod_delayed_work_on);
+
+static void rcu_work_rcufn(struct rcu_head *rcu)
+{
+	struct rcu_work *rwork = container_of(rcu, struct rcu_work, rcu);
+
+	/* read the comment in __queue_work() */
+	local_irq_disable();
+	__queue_work(WORK_CPU_UNBOUND, rwork->wq, &rwork->work);
+	local_irq_enable();
+}
+
+/**
+ * queue_rcu_work - queue work after a RCU grace period
+ * @wq: workqueue to use
+ * @rwork: work to queue
+ *
+ * Return: %false if @rwork was already pending, %true otherwise.  Note
+ * that a full RCU grace period is guaranteed only after a %true return.
+ * While @rwork is guarnateed to be executed after a %false return, the
+ * execution may happen before a full RCU grace period has passed.
+ */
+bool queue_rcu_work(struct workqueue_struct *wq, struct rcu_work *rwork)
+{
+	struct work_struct *work = &rwork->work;
+
+	if (!test_and_set_bit(WORK_STRUCT_PENDING_BIT, work_data_bits(work))) {
+		rwork->wq = wq;
+		call_rcu(&rwork->rcu, rcu_work_rcufn);
+		return true;
+	}
+
+	return false;
+}
+EXPORT_SYMBOL(queue_rcu_work);
 
 /**
  * worker_enter_idle - enter idle state
@@ -2135,7 +2169,9 @@ __acquires(&pool->lock)
 	 */
 	lockdep_invariant_state(true);
 	trace_workqueue_execute_start(work);
+	dbg_snapshot_work(worker, worker->task, worker->current_func, DSS_FLAG_IN);
 	worker->current_func(work);
+	dbg_snapshot_work(worker, worker->task, worker->current_func, DSS_FLAG_OUT);
 	/*
 	 * While we must be careful to not use "work" after this, the trace
 	 * point will only record its address.
@@ -2915,7 +2951,9 @@ bool flush_work(struct work_struct *work)
 	lock_map_release(&work->lockdep_map);
 
 	if (start_flush_work(work, &barr)) {
+		sec_debug_wtsk_set_data(DTYPE_WORK, work);
 		wait_for_completion(&barr.done);
+		sec_debug_wtsk_clear_data();
 		destroy_work_on_stack(&barr.work);
 		return true;
 	} else {
@@ -3047,6 +3085,26 @@ bool flush_delayed_work(struct delayed_work *dwork)
 	return flush_work(&dwork->work);
 }
 EXPORT_SYMBOL(flush_delayed_work);
+
+/**
+ * flush_rcu_work - wait for a rwork to finish executing the last queueing
+ * @rwork: the rcu work to flush
+ *
+ * Return:
+ * %true if flush_rcu_work() waited for the work to finish execution,
+ * %false if it was already idle.
+ */
+bool flush_rcu_work(struct rcu_work *rwork)
+{
+	if (test_bit(WORK_STRUCT_PENDING_BIT, work_data_bits(&rwork->work))) {
+		rcu_barrier();
+		flush_work(&rwork->work);
+		return true;
+	} else {
+		return flush_work(&rwork->work);
+	}
+}
+EXPORT_SYMBOL(flush_rcu_work);
 
 static bool __cancel_work(struct work_struct *work, bool is_dwork)
 {
