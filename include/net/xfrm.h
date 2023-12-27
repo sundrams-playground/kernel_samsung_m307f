@@ -332,6 +332,7 @@ int xfrm_policy_register_afinfo(const struct xfrm_policy_afinfo *afinfo, int fam
 void xfrm_policy_unregister_afinfo(const struct xfrm_policy_afinfo *afinfo);
 void km_policy_notify(struct xfrm_policy *xp, int dir,
 		      const struct km_event *c);
+void xfrm_policy_cache_flush(void);
 void km_state_notify(struct xfrm_state *x, const struct km_event *c);
 
 struct xfrm_tmpl;
@@ -1392,23 +1393,6 @@ static inline int xfrm_state_kern(const struct xfrm_state *x)
 	return atomic_read(&x->tunnel_users);
 }
 
-static inline bool xfrm_id_proto_valid(u8 proto)
-{
-	switch (proto) {
-	case IPPROTO_AH:
-	case IPPROTO_ESP:
-	case IPPROTO_COMP:
-#if IS_ENABLED(CONFIG_IPV6)
-	case IPPROTO_ROUTING:
-	case IPPROTO_DSTOPTS:
-#endif
-		return true;
-	default:
-		return false;
-	}
-}
-
-/* IPSEC_PROTO_ANY only matches 3 IPsec protocols, 0 could match all. */
 static inline int xfrm_id_proto_match(u8 proto, u8 userproto)
 {
 	return (!userproto || proto == userproto ||
@@ -2022,38 +2006,4 @@ static inline int xfrm_tunnel_check(struct sk_buff *skb, struct xfrm_state *x,
 
 	return 0;
 }
-
-extern const int xfrm_msg_min[XFRM_NR_MSGTYPES];
-extern const struct nla_policy xfrma_policy[XFRMA_MAX+1];
-
-struct xfrm_translator {
-	/* Allocate frag_list and put compat translation there */
-	int (*alloc_compat)(struct sk_buff *skb, const struct nlmsghdr *src);
-
-	/* Allocate nlmsg with 64-bit translaton of received 32-bit message */
-	struct nlmsghdr *(*rcv_msg_compat)(const struct nlmsghdr *nlh,
-			int maxtype, const struct nla_policy *policy,
-			struct netlink_ext_ack *extack);
-
-	/* Translate 32-bit user_policy from sockptr */
-	int (*xlate_user_policy_sockptr)(u8 **pdata32, int optlen);
-
-	struct module *owner;
-};
-
-#if IS_ENABLED(CONFIG_XFRM_USER_COMPAT)
-extern int xfrm_register_translator(struct xfrm_translator *xtr);
-extern int xfrm_unregister_translator(struct xfrm_translator *xtr);
-extern struct xfrm_translator *xfrm_get_translator(void);
-extern void xfrm_put_translator(struct xfrm_translator *xtr);
-#else
-static inline struct xfrm_translator *xfrm_get_translator(void)
-{
-	return NULL;
-}
-static inline void xfrm_put_translator(struct xfrm_translator *xtr)
-{
-}
-#endif
-
 #endif	/* _NET_XFRM_H */

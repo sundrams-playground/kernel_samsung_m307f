@@ -574,6 +574,8 @@ struct hid_device {							/* device report descriptor */
 	struct list_head inputs;					/* The list of inputs */
 	void *hiddev;							/* The hiddev structure */
 	void *hidraw;
+	void *hidovr;
+	void *hidtvr;
 
 	char name[128];							/* Device name */
 	char phys[64];							/* Device physical location */
@@ -954,7 +956,7 @@ static inline void hid_map_usage(struct hid_input *hidinput,
 
 	if (unlikely(c > limit || !bmap)) {
 		pr_warn_ratelimited("%s: Invalid code %d type %d\n",
-				    input->name, c, type);
+				input->name, c, type);
 		*bit = NULL;
 		return;
 	}
