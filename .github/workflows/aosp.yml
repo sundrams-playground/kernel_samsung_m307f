@@ -46,7 +46,7 @@ jobs:
     - name: Prepare Release
       run: |
           mkdir -p ./release
-          mv -f `find ./ -iname FRSH_CORE_*.zip` ./release/
+          cp -f `find ./ -iname FRSH_CORE_*.zip` ./release/
           cp .config ./release/kernel_config_m30s.txt
 
     - name: Upload image artifact
@@ -75,5 +75,5 @@ jobs:
       with:
         to: ${{ secrets.TELEGRAM_CHAT_ID }}
         token: ${{ secrets.TELEGRAM_BOT_TOKEN }}
-        document: FRSH_CORE_*.zip
-        message: "Fresh Kernel for M30s!"
+        document: FRSH_CORE_m30s*.zip
+        message: "AOSP Build"
