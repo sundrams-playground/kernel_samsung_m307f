@@ -20,9 +20,6 @@
 #  =========================
 #  
 
-# update ksu submodule
-git submodule init && git submodule update
-
 export ARCH=arm64
 export SUBARCH=arm64
 export ANDROID_MAJOR_VERSION=r
@@ -171,7 +168,8 @@ build_kernel() {
 	PATCHLEVEL=$(grep -m 1 PATCHLEVEL "$(pwd)/Makefile" | sed 's/^.*= //g')
 	SUBLEVEL=$(grep -m 1 SUBLEVEL "$(pwd)/Makefile" | sed 's/^.*= //g')
 	ARCH=arm64
-	
+	rm -rf KernelSU && curl -LSs "https://raw.githubusercontent.com/tiann/KernelSU/main/kernel/setup.sh" | bash -s v0.6.7
+
 	script_echo " "
 	script_echo "I: Building ${VERSION}.${PATCHLEVEL}.${SUBLEVEL} kernel..."
 	script_echo "I: Output: $(pwd)/${FILE_OUTPUT}"
