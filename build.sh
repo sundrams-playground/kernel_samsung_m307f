@@ -42,20 +42,21 @@ CONFIG_DIR=$(pwd)/arch/arm64/configs
 OUTPUT_DIR=$(pwd)/output
 DEIVCE_OUTPUT_DIR=${OUTPUT_DIR}/${DEVICE_BUILD}
 BUILDDATE=$(date +%s)
+kver=$(make kernelversion)
 
 if [[ ! -z ${GITHUB_REF##*/} ]]; then
-	FILE_OUTPUT=FRSH_CORE_${DEVICE_BUILD}_${GITHUB_REF##*/}_${BUILDDATE}.zip
+	FILE_OUTPUT=FRSH_CORE_${DEVICE_BUILD}_KSU_[${kver}]_${GITHUB_REF##*/}_${BUILDDATE}.zip
 	if [[ ${GITHUB_REF##*/} == "staging" ]]; then
 		LOCALVERSION=' - Fresh Core'
 		export LOCALVERSION=' - Fresh Core'
 	else
-		LOCALVERSION=" - Fresh Core-${GITHUB_REF##*/}"
-		export LOCALVERSION=" - Fresh Core-${GITHUB_REF##*/}"
+		LOCALVERSION=" - Fresh Core-${GITHUB_REF##*/} - KSU"
+		export LOCALVERSION=" - Fresh Core-${GITHUB_REF##*/} - KSU"
 	fi
 else
-	FILE_OUTPUT=FRSH_CORE_${DEVICE_BUILD}_user_${BUILDDATE}.zip
-	LOCALVERSION="-user"
-	export LOCALVERSION="-user"
+	FILE_OUTPUT=FRSH_CORE_${DEVICE_BUILD}_KSU_[${kver}]_${BUILDDATE}.zip
+	LOCALVERSION="-user - KSU"
+	export LOCALVERSION="-user - KSU"
 fi
 
 script_echo() {

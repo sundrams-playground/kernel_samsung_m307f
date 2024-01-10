@@ -51,7 +51,7 @@ jobs:
     - name: Prepare Release
       run: |
           mkdir -p ./release
-          cp -f `find ./ -iname FRSH_CORE_*.zip` ./release/
+          cp -f FRSH_CORE_*.zip ./release/
           cp .config ./release/kernel_config_m30s.txt
 
     - name: Upload image artifact
