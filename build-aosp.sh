@@ -76,8 +76,9 @@ download_toolchain() {
 download_toolchain32() {
 	mkdir -p ${TOOLCHAIN_EXT_ARM32}
 	cd ${TOOLCHAIN_EXT_ARM32}
-	wget https://developer.arm.com/-/media/Files/downloads/gnu-a/10.2-2020.11/binrel/gcc-arm-10.2-2020.11-x86_64-arm-none-eabi.tar.xz --output-document=${TOOLCHAIN_EXT_ARM32}/gcc-arm-10.2-2020.11-x86_64-arm-none-eabi.tar.xz
-	tar -xvf ${TOOLCHAIN_EXT_ARM32}/gcc-arm-10.2-2020.11-x86_64-arm-none-eabi.tar.xz
+	wget https://github.com/xyz-sundram/Releases/releases/download/gcc-arm-10.2-2020.11-x86_64-arm-none-eabi.tar.xz/gcc-arm-10.2-2020.11-x86_64-arm-none-eabi.tar.xz.zip --output-document=${TOOLCHAIN_EXT_ARM32}/gcc-arm-10.2-2020.11-x86_64-arm-none-eabi.tar.xz
+	mv gcc-arm-10.2-2020.11-x86_64-arm-none-eabi.tar.xz.zip gcc-arm-10.2-2020.11-x86_64-arm-none-eabi.tar.xz
+        tar -xvf ${TOOLCHAIN_EXT_ARM32}/gcc-arm-10.2-2020.11-x86_64-arm-none-eabi.tar.xz
 	mv ${TOOLCHAIN_EXT_ARM32}/gcc-arm-10.2-2020.11-x86_64-arm-none-eabi/* ${TOOLCHAIN_EXT_ARM32}
 	verify_toolchain
 }
