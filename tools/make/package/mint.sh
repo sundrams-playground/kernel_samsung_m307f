@@ -9,7 +9,7 @@ do.modules=0
 do.systemless=0
 do.cleanup=1
 do.cleanuponabort=0
-supported.patchlevels=2021-04 - 
+supported.patchlevels=2020-04 - 
 '; } # end properties
 
 # shell variables
