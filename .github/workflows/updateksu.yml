@@ -1,42 +1,19 @@
-name: Push lastest KernelSU
+name: Check KernelSU tag update
 
 on:
-  workflow_dispatch:
   schedule:
-    - cron: '0 23 * * *'
+    - cron: '0 12 15,30 * *'
+  workflow_dispatch:
 
 jobs:
-  check:
+  update:
     runs-on: ubuntu-latest
-    env:
-      ACCESS_TOKEN: ${{ secrets.ACCESS_TOKEN  }}
     steps:
-    - name: Checkout
-      uses: actions/checkout@v3
-      with:
-        persist-credentials: false
-        submodules: 'true'
-        fetch-depth: 0
-        sparse-checkout: .github
-      
-    - name: Update KSU
-      id: sha
-      continue-on-error: true
-      run: |
-        git config --global user.email "rushiranpise17@gmail.com"
-        git config --global user.name "Rushi Ranpise"
-        git submodule sync
-        git submodule update --init --recursive
-        cd $GITHUB_WORKSPACE/KernelSU
-        git checkout main
-        git pull
-        cd .. && git add .
-        git commit -m "Sync KernelSU to latest source"
-        export NEW=$(git rev-parse HEAD)
-        echo "NEW_SHA=$NEW" >> $GITHUB_OUTPUT
+      - name: Checkout repo
+        uses: actions/checkout@v3.5.3
+        with:
+          fetch-depth: 1
 
-    - name: Push
-      if: "${{ github.sha != steps.sha.outputs.NEW_SHA && env.ACCESS_TOKEN != ''}}"
-      uses: ad-m/github-push-action@master
-      with:
-        github_token: ${{ secrets.ACCESS_TOKEN }}
+      - name: Check update
+        run: |
+          bash check-kernelsu-update.sh
