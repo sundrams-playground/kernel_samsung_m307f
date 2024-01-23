@@ -219,3 +219,7 @@ lib/lib.a.symversions
 arch/arm64/lib/lib.a.symversions
 arch/arm/vdso/vdsomunge
 kernel/config_data.h
+KernelSU
+firmware/abov/a96t326_m30s.fw
+firmware/abov/a96t326_voguelte.fw
+firmware/sensorhub/shub_exynos9611_m30s.fw
