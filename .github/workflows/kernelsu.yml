@@ -41,8 +41,8 @@ jobs:
     strategy:
       matrix:
         variant: [oneui, aosp]
-        enforcing: [e, p]
-        android: [11,12]
+        enforcing: [e]
+        android: [11, 12]
         device: [m30s, a50]
 
       fail-fast: false
@@ -141,19 +141,3 @@ jobs:
          document: ./tmp/manager/*.apk
          if-no-files-found: error
 
-  del_runs:
-    name: Delete workflow runs
-    runs-on: ubuntu-latest
-    permissions:
-      actions: write
-    steps:
-      - name: Delete workflow runs
-        uses: Mattraks/delete-workflow-runs@v2
-        with:
-          token: ${{ secrets.ACCESS_TOKEN }}
-          repository: ${{ github.repository }}
-          retain_days: 1
-          keep_minimum_runs: 1
-          delete_workflow_pattern: all
-          delete_workflow_by_state_pattern: all
-          delete_run_by_conclusion_pattern: all
