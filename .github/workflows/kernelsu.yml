@@ -40,10 +40,10 @@ jobs:
 
     strategy:
       matrix:
-        variant: [oneui, aosp]
+        variant: [oneui]
         enforcing: [e]
-        android: [11, 12]
-        device: [m30s, a50]
+        android: [11]
+        device: [m30s]
 
       fail-fast: false
 
