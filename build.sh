@@ -60,7 +60,7 @@ exit_script() {
 }
 
 download_toolchain() {
-	git clone https://gitlab.com/TenSeventy7/exynos9610_toolchains_fresh.git ${TOOLCHAIN_EXT} --single-branch -b ${BUILD_PREF_COMPILER_VERSION} --depth 1 2>&1 | sed 's/^/     /'
+	git clone --depth=1 https://gitlab.com/LeCmnGend/clang -b clang-14 toolchain 2>&1 | sed 's/^/     /'
 	verify_toolchain
 }
 
