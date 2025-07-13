@@ -1,0 +1,46 @@
+name: Build KernelSU for M30
+
+on:
+  workflow_dispatch:
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout kernel source
+        uses: actions/checkout@v4
+
+      - name: Install dependencies
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y build-essential bc bison flex libssl-dev libncurses-dev libelf-dev curl git wget zip
+
+      - name: Merge KernelSU
+        run: |
+          git clone --depth=1 https://github.com/KernelSU/KernelSU KernelSU_tmp
+          mkdir -p drivers/kernelsu
+          cp -r KernelSU_tmp/kernel/* drivers/kernelsu/
+          echo 'CONFIG_KERNELSU=y' >> arch/arm64/configs/m30lte_fimc_is2_defconfig
+          rm -rf KernelSU_tmp
+
+      - name: Setup toolchains
+        run: |
+          mkdir toolchains
+          cd toolchains
+          git clone --depth=1 https://github.com/PixelExperience/prebuilts_clang_host_linux-x86_clang-r498229 clang
+          git clone --depth=1 https://github.com/arter97/arm64-gcc gcc
+          git clone --depth=1 https://github.com/arter97/arm32-gcc gcc32
+
+      - name: Build kernel
+        run: |
+          export ARCH=arm64
+          export SUBARCH=arm64
+          export PATH=$GITHUB_WORKSPACE/toolchains/clang/bin:$GITHUB_WORKSPACE/toolchains/gcc/bin:$GITHUB_WORKSPACE/toolchains/gcc32/bin:$PATH
+          make O=out m30lte_fimc_is2_defconfig
+          make -j$(nproc) O=out
+
+      - name: Upload kernel image
+        uses: actions/upload-artifact@v4
+        with:
+          name: KernelSU-M30-Image
+          path: out/arch/arm64/boot/Image
